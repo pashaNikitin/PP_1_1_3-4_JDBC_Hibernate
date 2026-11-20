@@ -1,0 +1,13 @@
+target/
+
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+*.log
+*.tmp
+
+.DS_Store
+Thumbs.db
