@@ -18,10 +18,28 @@ public class UserServiceImpl implements UserService {
     }
 
     public void saveUser(String name, String lastName, byte age) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Имя не может быть пустым");
+        }
+        if (lastName == null || lastName.isBlank()) {
+            throw new IllegalArgumentException("Фамилия не может быть пустой");
+        }
+        if (name.length() > 50) {
+            throw new IllegalArgumentException("Имя не может быть длиннее 50 символов");
+        }
+        if (lastName.length() > 50) {
+            throw new IllegalArgumentException("Фамилия не может быть длиннее 50 символов");
+        }
+        if (age < 1 || age > 120) {
+            throw new IllegalArgumentException("Возраст должен быть от 1 до 120");
+        }
         userDao.saveUser(name, lastName, age);
     }
 
     public void removeUserById(long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID должен быть положительным");
+        }
         userDao.removeUserById(id);
     }
 
