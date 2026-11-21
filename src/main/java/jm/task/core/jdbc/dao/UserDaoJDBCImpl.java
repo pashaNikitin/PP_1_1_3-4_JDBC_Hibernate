@@ -12,6 +12,15 @@ public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
     }
 
+    private void executeUpdate(String sql) {
+        try (Connection conn = Util.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException("Не удалось выполнить SQL: " + sql, e);
+        }
+    }
+
     @Override
     public void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users (" +
@@ -19,24 +28,13 @@ public class UserDaoJDBCImpl implements UserDao {
                 "name VARCHAR(50), " +
                 "lastName VARCHAR(50), " +
                 "age TINYINT)";
-        try (Connection conn = Util.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        executeUpdate(sql);
     }
 
     @Override
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS users";
-        try (Connection conn = Util.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        executeUpdate(sql);
     }
 
     @Override
@@ -50,7 +48,7 @@ public class UserDaoJDBCImpl implements UserDao {
             pstmt.executeUpdate();
             System.out.println("User с именем — " + name + " добавлен в базу данных");
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Не удалось сохранить пользователя: " + name, e);
         }
     }
 
@@ -62,7 +60,7 @@ public class UserDaoJDBCImpl implements UserDao {
             pstmt.setLong(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Не удалось удалить пользователя с id: " + id, e);
         }
     }
 
@@ -79,7 +77,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 users.add(user);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Не удалось получить список пользователей", e);
         }
         return users;
     }
@@ -87,12 +85,7 @@ public class UserDaoJDBCImpl implements UserDao {
     @Override
     public void cleanUsersTable() {
         String sql = "TRUNCATE TABLE users";
-        try (Connection conn = Util.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        executeUpdate(sql);
     }
 }
 
